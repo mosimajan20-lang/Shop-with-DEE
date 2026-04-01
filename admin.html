@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shop With DEE 💜 — Admin</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<!-- Google Identity Services for OAuth -->
+<script src="https://accounts.google.com/gsi/client" async defer></script>
+<style>
+  :root{
+    --purple:#8b5cf6;--purple-dark:#6d28d9;--purple-light:#c4b5fd;
+    --pink:#ec4899;--pink-light:#f9a8d4;--sky:#38bdf8;--sky-light:#bae6fd;
+    --bg:#fdf4ff;--card:#fff;--text:#1e1033;--muted:#7c6b99;
+    --border:#e9d5ff;--radius:18px;--shadow:0 8px 40px rgba(139,92,246,0.13);
+    --green:#22c55e;--red:#ef4444;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+  nav{background:linear-gradient(135deg,var(--purple-dark) 0%,var(--pink) 60%,var(--sky) 100%);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;box-shadow:0 4px 24px rgba(139,92,246,0.25);position:sticky;top:0;z-index:999;gap:12px;}
+  .nav-brand{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:#fff;letter-spacing:-1px;user-select:none;flex-shrink:0;}
+  .nav-brand span{color:var(--sky-light);}
+  .nav-right{display:flex;align-items:center;gap:10px;flex-shrink:0;}
+  .nav-link{background:rgba(255,255,255,0.18);border:1.5px solid rgba(255,255,255,0.3);color:#fff;padding:7px 16px;border-radius:50px;cursor:pointer;font-size:0.82rem;font-weight:600;transition:all 0.2s;text-decoration:none;display:inline-flex;align-items:center;gap:6px;}
+  .nav-link:hover{background:#fff;color:var(--purple-dark);border-color:#fff;}
+  .nav-badge{background:rgba(255,255,255,0.25);border:1.5px solid rgba(255,255,255,0.4);color:#fff;padding:5px 14px;border-radius:50px;font-size:0.8rem;font-weight:700;}
+
+  /* ---- LOCK SCREEN ---- */
+  #lock-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:calc(100vh - 64px);padding:24px;}
+  .lock-card{background:var(--card);border-radius:24px;box-shadow:var(--shadow);border:1.5px solid var(--border);padding:40px 36px;text-align:center;max-width:380px;width:100%;}
+  .lock-icon{font-size:3.5rem;margin-bottom:16px;}
+  .lock-title{font-family:'Playfair Display',serif;font-size:1.6rem;font-weight:900;color:var(--purple-dark);margin-bottom:8px;}
+  .lock-sub{color:var(--muted);font-size:0.92rem;margin-bottom:28px;line-height:1.6;}
+  .lock-input{width:100%;border:2px solid var(--border);border-radius:14px;padding:13px 18px;font-size:1.15rem;font-family:inherit;background:#fdf4ff;color:var(--text);text-align:center;letter-spacing:6px;outline:none;transition:border-color 0.2s;margin-bottom:16px;}
+  .lock-input:focus{border-color:var(--purple);background:#fff;}
+
+  /* ---- ADMIN LAYOUT ---- */
+  #admin-page{display:none;padding:28px 16px;max-width:1100px;margin:0 auto;}
+  .admin-grid{display:grid;grid-template-columns:320px 1fr;gap:24px;}
+  @media(max-width:900px){.admin-grid{grid-template-columns:1fr;}}
+
+  .card{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);border:1.5px solid var(--border);padding:24px;margin-bottom:20px;}
+  .card-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--purple-dark);margin-bottom:16px;display:flex;align-items:center;gap:8px;}
+
+  .profile-pic-wrap{text-align:center;margin-bottom:18px;}
+  .profile-pic{width:100px;height:100px;border-radius:50%;object-fit:cover;border:4px solid var(--pink-light);box-shadow:0 4px 20px rgba(236,72,153,0.25);background:linear-gradient(135deg,var(--purple-light),var(--pink-light));display:block;margin:0 auto 10px;}
+  .profile-name{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:900;color:var(--purple-dark);}
+  .profile-desc{color:var(--muted);font-size:0.88rem;margin-top:5px;line-height:1.6;}
+
+  label{display:block;font-size:0.82rem;font-weight:600;color:var(--purple-dark);margin-bottom:5px;margin-top:12px;}
+  input[type=text],input[type=number],textarea,input[type=url]{width:100%;border:1.5px solid var(--border);border-radius:10px;padding:9px 13px;font-size:0.92rem;font-family:inherit;background:#fdf4ff;color:var(--text);transition:border-color 0.2s;outline:none;}
+  input:focus,textarea:focus{border-color:var(--purple);background:#fff;}
+  textarea{resize:vertical;min-height:70px;}
+
+  .btn{display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;border:none;border-radius:50px;padding:10px 22px;cursor:pointer;font-size:0.9rem;font-weight:600;margin-top:10px;transition:opacity 0.2s;width:100%;justify-content:center;font-family:inherit;}
+  .btn:hover{opacity:0.88;}
+  .btn:disabled{opacity:0.5;cursor:not-allowed;}
+  .btn.sky{background:linear-gradient(135deg,var(--sky),var(--purple));}
+  .btn.indigo{background:linear-gradient(135deg,#6d28d9,var(--sky));}
+  .btn.sm{padding:7px 16px;font-size:0.82rem;width:auto;margin-top:6px;}
+  .btn.green{background:linear-gradient(135deg,#22c55e,#16a34a);}
+  .btn.danger{background:linear-gradient(135deg,#ef4444,#dc2626);}
+  input[type=file]{display:none;}
+
+  /* Drive status */
+  .drive-connected{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px 16px;font-size:0.84rem;color:#166534;line-height:1.6;}
+  .drive-connected strong{font-weight:700;}
+  .drive-disconnected{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:12px 16px;font-size:0.84rem;color:#1d4ed8;line-height:1.6;margin-bottom:10px;}
+
+  /* Upload progress */
+  .upload-progress{background:#fdf4ff;border:1.5px solid var(--border);border-radius:12px;padding:14px 16px;margin-top:12px;display:none;}
+  .progress-bar-wrap{background:#e9d5ff;border-radius:50px;height:8px;margin-top:8px;overflow:hidden;}
+  .progress-bar{height:100%;background:linear-gradient(135deg,var(--purple),var(--pink));border-radius:50px;transition:width 0.3s;width:0%;}
+  .progress-label{font-size:0.82rem;color:var(--purple-dark);font-weight:600;}
+
+  /* Announcements */
+  .announce-list{max-height:220px;overflow-y:auto;padding-right:4px;margin-top:12px;}
+  .announce-item{background:linear-gradient(135deg,#faf5ff,#fdf2f8);border:1.5px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:10px;position:relative;}
+  .announce-item p{font-size:0.88rem;color:var(--text);line-height:1.55;padding-right:60px;}
+  .announce-item .meta{font-size:0.73rem;color:var(--muted);margin-top:4px;}
+  .del-btn{position:absolute;top:10px;right:10px;background:#fee2e2;border:none;border-radius:8px;color:#ef4444;font-size:0.73rem;padding:4px 10px;cursor:pointer;font-family:inherit;}
+
+  /* Admin photo list */
+  .admin-media-list{display:flex;flex-direction:column;gap:16px;margin-top:14px;}
+  .admin-media-item{display:flex;gap:16px;align-items:flex-start;background:#fdf4ff;border:1.5px solid var(--border);border-radius:14px;padding:14px;}
+  .admin-thumb{width:100px;height:100px;flex-shrink:0;border-radius:10px;overflow:hidden;background:var(--border);cursor:pointer;position:relative;}
+  .admin-thumb img{width:100%;height:100%;object-fit:cover;display:block;}
+  .admin-media-fields{flex:1;min-width:0;}
+  .price-row{display:flex;gap:10px;align-items:center;margin-top:10px;}
+  .price-row input{flex:1;margin-top:0;}
+  .sold-toggle{display:inline-flex;align-items:center;gap:6px;font-size:0.8rem;font-weight:600;cursor:pointer;user-select:none;padding:7px 14px;border-radius:50px;border:1.5px solid;transition:all 0.2s;flex-shrink:0;}
+  .sold-toggle.available{border-color:var(--green);color:var(--green);background:#f0fdf4;}
+  .sold-toggle.sold{border-color:var(--red);color:var(--red);background:#fef2f2;}
+  .admin-media-actions{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap;align-items:center;}
+
+  /* Comments admin */
+  .comment-admin-item{display:flex;gap:10px;padding:12px;border-bottom:1px solid var(--border);align-items:flex-start;}
+  .comment-admin-item:last-child{border-bottom:none;}
+  .ca-avatar{width:32px;height:32px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--purple-light),var(--pink-light));display:flex;align-items:center;justify-content:center;font-size:0.9rem;font-weight:700;color:var(--purple-dark);}
+  .ca-body{flex:1;min-width:0;}
+  .ca-product{font-size:0.72rem;color:var(--muted);margin-bottom:2px;}
+  .ca-author{font-size:0.82rem;font-weight:700;color:var(--purple-dark);}
+  .ca-text{font-size:0.88rem;color:var(--text);line-height:1.5;word-break:break-word;}
+  .ca-time{font-size:0.7rem;color:var(--muted);margin-top:2px;}
+  .ca-del{background:#fee2e2;border:none;border-radius:8px;color:#ef4444;font-size:0.72rem;padding:3px 10px;cursor:pointer;font-family:inherit;flex-shrink:0;}
+
+  .info-box{background:#eff6ff;border:1.5px solid #bfdbfe;border-radius:12px;padding:12px 16px;font-size:0.83rem;color:#1d4ed8;line-height:1.6;margin-bottom:14px;word-break:break-all;}
+  .wa-info{background:#f0fdf4;border:1.5px solid #bbf7d0;border-radius:12px;padding:12px 16px;margin-top:12px;font-size:0.82rem;color:#166534;}
+  .empty-state{text-align:center;color:var(--muted);font-size:0.9rem;padding:20px 0;}
+
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;padding:11px 24px;border-radius:50px;font-size:0.88rem;font-weight:600;z-index:10000;box-shadow:0 4px 20px rgba(139,92,246,0.4);animation:toastIn 0.3s ease;white-space:nowrap;}
+  @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(14px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--purple-light);border-radius:6px;}
+
+  @media(max-width:480px){
+    nav{padding:0 14px;height:58px;}
+    .nav-brand{font-size:1.2rem;}
+    #admin-page{padding:18px 10px;}
+    .admin-media-item{flex-direction:column;}
+    .admin-thumb{width:100%;height:180px;}
+    .lock-card{padding:28px 20px;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Shop <span>With DEE</span> 💜</div>
+  <div class="nav-right">
+    <a class="nav-link" href="index.html" target="_blank">🛍️ View Storefront</a>
+    <span class="nav-badge">⚙️ Admin</span>
+  </div>
+</nav>
+
+<!-- LOCK SCREEN -->
+<div id="lock-screen">
+  <div class="lock-card">
+    <div class="lock-icon">🔐</div>
+    <div class="lock-title">Admin Dashboard</div>
+    <div class="lock-sub">Enter your PIN to manage your shop.<br/>First time? Set any PIN of 4+ characters.</div>
+    <input class="lock-input" type="password" id="pin-input" placeholder="••••" maxlength="20" onkeydown="if(event.key==='Enter')unlockAdmin()"/>
+    <button class="btn" onclick="unlockAdmin()" style="font-size:1rem;padding:13px 22px;">🔓 Unlock Dashboard</button>
+  </div>
+</div>
+
+<!-- ADMIN DASHBOARD -->
+<div id="admin-page">
+  <div class="admin-grid">
+
+    <!-- LEFT COLUMN -->
+    <div>
+
+      <!-- Storefront link -->
+      <div class="info-box">
+        💡 <strong>Your customer link:</strong><br/>
+        <span id="storefront-url" style="font-size:0.79rem;"></span>
+        <button class="btn sm" onclick="copyStorefrontLink()" style="margin-top:8px;width:auto;">📋 Copy Link</button>
+      </div>
+
+      <!-- Google Drive Card -->
+      <div class="card">
+        <div class="card-title">☁️ Google Drive Storage</div>
+        <div id="drive-status">
+          <div class="drive-disconnected">Not connected. Connect Google Drive so your images upload to the cloud and all your customers can see them.</div>
+          <button class="btn sky" onclick="connectGoogle()">🔗 Connect Google Drive</button>
+        </div>
+      </div>
+
+      <!-- Profile Card -->
+      <div class="card">
+        <div class="card-title">🌸 My Profile</div>
+        <div class="profile-pic-wrap">
+          <img class="profile-pic" id="admin-pic" src="" alt="Profile" onerror="this.src=defaultAvatar()"/>
+          <div class="profile-name" id="admin-name-display">Shop With DEE</div>
+          <div class="profile-desc" id="admin-desc-display">Add your description below…</div>
+        </div>
+        <label>Upload Profile Picture</label>
+        <label class="btn" for="pic-upload" style="margin-top:6px;">📷 Choose Photo</label>
+        <input type="file" id="pic-upload" accept="image/*"/>
+        <label>Display Name</label>
+        <input type="text" id="input-name" placeholder="e.g. D's Boutique" maxlength="50"/>
+        <label>Bio / Description</label>
+        <textarea id="input-desc" placeholder="Tell everyone about your shop…" rows="3"></textarea>
+        <label>WhatsApp Number</label>
+        <input type="text" id="input-wa" placeholder="e.g. +27821234567"/>
+        <div class="wa-info">💡 Customers click the green WhatsApp button to contact you directly.</div>
+        <button class="btn" onclick="saveProfile()" style="margin-top:12px;">💾 Save Profile</button>
+        <button class="btn indigo" onclick="changePin()" style="margin-top:8px;">🔐 Change PIN</button>
+      </div>
+
+      <!-- Announcements -->
+      <div class="card">
+        <div class="card-title">📢 Announcements</div>
+        <textarea id="input-announce" placeholder="Write your announcement here…" rows="3"></textarea>
+        <button class="btn" onclick="addAnnouncement()">📣 Post Announcement</button>
+        <div class="announce-list" id="admin-announces"></div>
+      </div>
+
+      <!-- Comments inbox -->
+      <div class="card">
+        <div class="card-title">💬 Comments Inbox</div>
+        <div id="admin-comments"><div class="empty-state">No comments yet.</div></div>
+      </div>
+
+    </div>
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <div class="card">
+        <div class="card-title">📸 Product Photos</div>
+        <p style="font-size:0.83rem;color:var(--muted);margin-bottom:12px;">Connect Google Drive first, then upload your photos. They'll appear instantly on the storefront.</p>
+
+        <label class="btn" for="photo-upload" id="upload-label">🖼️ Upload Photos</label>
+        <input type="file" id="photo-upload" accept="image/*" multiple/>
+
+        <!-- Upload progress -->
+        <div class="upload-progress" id="upload-progress">
+          <div class="progress-label" id="progress-label">Uploading…</div>
+          <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+        </div>
+
+        <div class="admin-media-list" id="admin-photos">
+          <div class="empty-state">No photos yet — upload some! 📸</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// =====================================================================
+//  CONFIGURATION — paste your Google OAuth Client ID here after setup
+// =====================================================================
+const GOOGLE_CLIENT_ID = 'PASTE_YOUR_CLIENT_ID_HERE';
+
+// =====================================================================
+//  ENCRYPTION
+// =====================================================================
+const COMMENT_KEY='ShopWithDEE_SecretKey_2025!';
+function xorEncrypt(t,k){let r='';for(let i=0;i<t.length;i++)r+=String.fromCharCode(t.charCodeAt(i)^k.charCodeAt(i%k.length));try{return btoa(unescape(encodeURIComponent(r)));}catch(e){return btoa(r);}}
+function xorDecrypt(e,k){try{const t=decodeURIComponent(escape(atob(e)));let r='';for(let i=0;i<t.length;i++)r+=String.fromCharCode(t.charCodeAt(i)^k.charCodeAt(i%k.length));return r;}catch(e){return'[unreadable]';}}
+function encryptComment(o){return{e:xorEncrypt(JSON.stringify(o),COMMENT_KEY),token:o.token};}
+function decryptComment(e){try{return JSON.parse(xorDecrypt(e.e,COMMENT_KEY));}catch(e){return null;}}
+
+// =====================================================================
+//  STATE
+// =====================================================================
+let state={name:'Shop With DEE',desc:'Welcome! Browse my latest arrivals, announcements & exclusive content.',pic:'',wa:'',announcements:[],photos:[],videos:[]};
+
+function saveState(){
+  try{localStorage.setItem('swd_state_v2',JSON.stringify(state));}
+  catch(e){toast('⚠️ Storage full! Remove some old items.');}
+}
+function loadState(){
+  try{
+    const s=localStorage.getItem('swd_state_v2');
+    if(s){const p=JSON.parse(s);state={...state,...p};
+      state.photos=(state.photos||[]).map(ph=>({likes:0,comments:[],views:0,addedDate:'',soldOut:false,desc:'',price:'',...ph}));
+      state.videos=(state.videos||[]).map(v=>({likes:0,comments:[],views:0,addedDate:'',soldOut:false,desc:'',price:'',...v}));}
+  }catch(e){}
+}
+
+// =====================================================================
+//  GOOGLE DRIVE
+// =====================================================================
+let tokenClient=null;
+let accessToken=null;
+let tokenExpiry=0;
+let _pendingResolve=null;
+let _pendingReject=null;
+
+function isConnected(){return!!accessToken&&Date.now()<tokenExpiry;}
+
+function initTokenClient(){
+  if(tokenClient)return;
+  if(typeof google==='undefined'){toast('⚠️ Google API not loaded. Check your internet.');return;}
+  tokenClient=google.accounts.oauth2.initTokenClient({
+    client_id:GOOGLE_CLIENT_ID,
+    scope:'https://www.googleapis.com/auth/drive.file',
+    callback:(resp)=>{
+      if(resp.error){
+        toast('❌ Google sign-in failed: '+resp.error);
+        if(_pendingReject){_pendingReject(new Error(resp.error));_pendingReject=null;_pendingResolve=null;}
+        return;
+      }
+      accessToken=resp.access_token;
+      tokenExpiry=Date.now()+(parseInt(resp.expires_in,10)-60)*1000;
+      toast('✅ Connected to Google Drive!');
+      updateDriveStatus();
+      if(_pendingResolve){_pendingResolve();_pendingResolve=null;_pendingReject=null;}
+    }
+  });
+}
+
+function connectGoogle(){
+  if(GOOGLE_CLIENT_ID==='PASTE_YOUR_CLIENT_ID_HERE'){
+    alert('⚠️ Setup needed!\n\nOpen admin.html in a text editor and replace PASTE_YOUR_CLIENT_ID_HERE with your Google OAuth Client ID.\n\nSee the step-by-step instructions you received.');
+    return;
+  }
+  initTokenClient();
+  if(tokenClient)tokenClient.requestAccessToken({prompt:isConnected()?'':'consent'});
+}
+
+async function ensureConnected(){
+  if(isConnected())return;
+  return new Promise((resolve,reject)=>{
+    _pendingResolve=resolve;_pendingReject=reject;
+    initTokenClient();
+    if(tokenClient)tokenClient.requestAccessToken({prompt:''});
+    else reject(new Error('Could not init Drive'));
+  });
+}
+
+async function uploadToDrive(file,onProgress){
+  await ensureConnected();
+  onProgress&&onProgress(10);
+
+  const metadata={name:file.name,mimeType:file.type};
+  const form=new FormData();
+  form.append('metadata',new Blob([JSON.stringify(metadata)],{type:'application/json'}));
+  form.append('file',file);
+
+  const res=await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&fields=id,name',{
+    method:'POST',
+    headers:{Authorization:`Bearer ${accessToken}`},
+    body:form
+  });
+
+  if(!res.ok){
+    const err=await res.json().catch(()=>({}));
+    throw new Error(err?.error?.message||`Upload failed (HTTP ${res.status})`);
+  }
+
+  const data=await res.json();
+  onProgress&&onProgress(70);
+
+  // Make the file publicly readable so customers can see it
+  await fetch(`https://www.googleapis.com/drive/v3/files/${data.id}/permissions`,{
+    method:'POST',
+    headers:{Authorization:`Bearer ${accessToken}`,'Content-Type':'application/json'},
+    body:JSON.stringify({role:'reader',type:'anyone'})
+  });
+
+  onProgress&&onProgress(100);
+
+  return{
+    id:data.id,
+    url:`https://drive.google.com/uc?export=view&id=${data.id}`
+  };
+}
+
+async function deleteFromDrive(driveId){
+  if(!driveId||!isConnected())return;
+  try{
+    await fetch(`https://www.googleapis.com/drive/v3/files/${driveId}`,{
+      method:'DELETE',headers:{Authorization:`Bearer ${accessToken}`}
+    });
+  }catch(e){}
+}
+
+function getDriveId(url){
+  if(!url)return null;
+  const m=url.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+  return m?m[1]:null;
+}
+
+function updateDriveStatus(){
+  const el=document.getElementById('drive-status');if(!el)return;
+  if(isConnected()){
+    el.innerHTML=`<div class="drive-connected">✅ Connected — images upload to <strong>mosimajan20@gmail.com</strong><br/><span style="font-size:0.78rem;opacity:0.8;">Token valid for ~1 hour. Reconnect if it expires.</span></div>
+    <button class="btn sm indigo" onclick="connectGoogle()" style="margin-top:8px;">🔄 Refresh Connection</button>`;
+  }else{
+    el.innerHTML=`<div class="drive-disconnected">Not connected. Connect Google Drive so your images upload to the cloud and all your customers can see them.</div>
+    <button class="btn sky" onclick="connectGoogle()">🔗 Connect Google Drive</button>`;
+  }
+}
+
+// =====================================================================
+//  LOCK / UNLOCK
+// =====================================================================
+function unlockAdmin(){
+  const pin=document.getElementById('pin-input').value;
+  if(!pin){toast('Please enter your PIN.');return;}
+  let stored=localStorage.getItem('swd_admin_pin');
+  if(!stored){
+    if(pin.length<4){toast('PIN must be at least 4 characters!');return;}
+    localStorage.setItem('swd_admin_pin',xorEncrypt(pin,COMMENT_KEY));
+    stored=localStorage.getItem('swd_admin_pin');
+    toast('PIN set! Keep it safe 🔐');
+  }
+  if(xorEncrypt(pin,COMMENT_KEY)!==stored){
+    toast('❌ Wrong PIN. Access denied.');
+    document.getElementById('pin-input').value='';return;
+  }
+  document.getElementById('lock-screen').style.display='none';
+  document.getElementById('admin-page').style.display='block';
+  loadState();renderAdmin();
+  // Display storefront link
+  const base=window.location.href.replace('admin.html','');
+  document.getElementById('storefront-url').textContent=base+'index.html';
+}
+
+function changePin(){
+  const cur=prompt('🔐 Enter your CURRENT PIN:');if(cur===null)return;
+  const stored=localStorage.getItem('swd_admin_pin');
+  if(stored&&xorEncrypt(cur,COMMENT_KEY)!==stored){toast('❌ Wrong PIN. Cancelled.');return;}
+  const np=prompt('🔑 Enter your NEW PIN (4+ characters):');if(np===null)return;
+  if(np.length<4){toast('PIN must be at least 4 characters!');return;}
+  const np2=prompt('✅ Confirm NEW PIN:');
+  if(np2!==np){toast('PINs do not match. Try again.');return;}
+  localStorage.setItem('swd_admin_pin',xorEncrypt(np,COMMENT_KEY));
+  toast('PIN changed successfully! 🔐');
+}
+
+function copyStorefrontLink(){
+  const url=document.getElementById('storefront-url').textContent;
+  navigator.clipboard.writeText(url).then(()=>toast('Link copied! 📋')).catch(()=>toast(url));
+}
+
+// =====================================================================
+//  PROFILE
+// =====================================================================
+document.addEventListener('DOMContentLoaded',()=>{
+
+  document.getElementById('pic-upload').addEventListener('change',async function(e){
+    const file=e.target.files[0];if(!file)return;
+    if(!isConnected()){toast('⚠️ Connect Google Drive first!');this.value='';return;}
+    toast('Uploading profile picture… ⏳');
+    try{
+      const{url}=await uploadToDrive(file);
+      state.pic=url;saveState();renderAdmin();toast('Profile picture updated! 📷');
+    }catch(err){toast('❌ Upload failed: '+err.message);}
+    this.value='';
+  });
+
+  document.getElementById('photo-upload').addEventListener('change',async function(e){
+    const files=Array.from(e.target.files);if(!files.length)return;
+    if(!isConnected()){toast('⚠️ Connect Google Drive first!');this.value='';return;}
+
+    const prog=document.getElementById('upload-progress');
+    const bar=document.getElementById('progress-bar');
+    const lbl=document.getElementById('progress-label');
+    prog.style.display='block';
+
+    let uploaded=0;
+    for(const file of files){
+      lbl.textContent=`Uploading ${file.name} (${uploaded+1}/${files.length})…`;
+      bar.style.width='0%';
+      try{
+        const{id,url}=await uploadToDrive(file,(pct)=>{bar.style.width=pct+'%';});
+        state.photos.push({
+          src:url,driveId:id,name:file.name,
+          desc:'',price:'',soldOut:false,likes:0,comments:[],views:0,
+          addedDate:new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'})
+        });
+        uploaded++;
+        saveState();
+      }catch(err){toast(`❌ ${file.name}: ${err.message}`);}
+    }
+
+    prog.style.display='none';
+    renderAdmin();
+    toast(`✅ ${uploaded} photo(s) saved to Google Drive & storefront!`);
+    this.value='';
+  });
+
+});
+
+// =====================================================================
+//  PROFILE SAVE
+// =====================================================================
+function saveProfile(){
+  const n=document.getElementById('input-name').value.trim();
+  const d=document.getElementById('input-desc').value.trim();
+  const w=document.getElementById('input-wa').value.trim();
+  if(n)state.name=n;if(d)state.desc=d;state.wa=w;
+  saveState();renderAdmin();toast('Profile saved! 💜');
+}
+
+// =====================================================================
+//  ANNOUNCEMENTS
+// =====================================================================
+function addAnnouncement(){
+  const txt=document.getElementById('input-announce').value.trim();if(!txt)return;
+  state.announcements.unshift({text:txt,date:new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'short',year:'numeric'})});
+  document.getElementById('input-announce').value='';saveState();renderAdmin();toast('Announcement posted! 📣');
+}
+function deleteAnnouncement(i){state.announcements.splice(i,1);saveState();renderAdmin();}
+
+// =====================================================================
+//  PHOTOS
+// =====================================================================
+function savePhotoMeta(i){
+  state.photos[i].title=document.getElementById(`ph-title-${i}`).value;
+  state.photos[i].desc=document.getElementById(`ph-desc-${i}`).value;
+  state.photos[i].price=document.getElementById(`ph-price-${i}`).value;
+  saveState();toast('Saved! 💜');
+}
+function togglePhotoSold(i){state.photos[i].soldOut=!state.photos[i].soldOut;saveState();renderAdmin();}
+async function deletePhoto(i){
+  if(!confirm('Delete this photo? This also removes it from Google Drive.'))return;
+  const driveId=state.photos[i].driveId||getDriveId(state.photos[i].src);
+  state.photos.splice(i,1);saveState();renderAdmin();
+  if(driveId)await deleteFromDrive(driveId);
+  toast('Photo deleted 🗑️');
+}
+
+// =====================================================================
+//  COMMENTS
+// =====================================================================
+function adminDeleteComment(type,ii,ci){
+  const arr=type==='photo'?state.photos:state.videos;
+  arr[ii].comments.splice(ci,1);saveState();renderAdmin();toast('Comment deleted 🗑️');
+}
+
+// =====================================================================
+//  RENDER
+// =====================================================================
+function renderAdmin(){
+  updateDriveStatus();
+
+  const pic=document.getElementById('admin-pic');
+  pic.src=state.pic||defaultAvatar();
+  document.getElementById('admin-name-display').textContent=state.name;
+  document.getElementById('admin-desc-display').textContent=state.desc;
+  document.getElementById('input-name').value=state.name;
+  document.getElementById('input-desc').value=state.desc;
+  document.getElementById('input-wa').value=state.wa||'';
+
+  // Announcements
+  const al=document.getElementById('admin-announces');
+  al.innerHTML=!state.announcements.length?'<div class="empty-state">No announcements yet</div>':
+    state.announcements.map((a,i)=>`<div class="announce-item"><p>${esc(a.text)}</p><div class="meta">📅 ${a.date}</div><button class="del-btn" onclick="deleteAnnouncement(${i})">✕ Delete</button></div>`).join('');
+
+  // Photos
+  const pg=document.getElementById('admin-photos');
+  if(!state.photos.length){pg.innerHTML='<div class="empty-state">No photos yet — connect Drive and upload some! 📸</div>';}
+  else{
+    pg.innerHTML=state.photos.map((p,i)=>`
+      <div class="admin-media-item">
+        <div class="admin-thumb" onclick="openLightbox('${p.src}')">
+          <img src="${p.src}" alt="${esc(p.name||'')}" loading="lazy" onerror="this.src=defaultAvatar()"/>
+        </div>
+        <div class="admin-media-fields">
+          <label style="margin-top:0;">Item Name / Title</label>
+          <input type="text" id="ph-title-${i}" placeholder="e.g. Blue Summer Dress" value="${esc(p.title||'')}"/>
+          <label>Description</label>
+          <textarea id="ph-desc-${i}" placeholder="Describe this item — fabric, size, colour, condition…" rows="2">${esc(p.desc||'')}</textarea>
+          <div class="price-row">
+            <input type="text" id="ph-price-${i}" placeholder="Price (e.g. R250)" value="${esc(p.price||'')}"/>
+            <button class="${p.soldOut?'sold-toggle sold':'sold-toggle available'}" onclick="togglePhotoSold(${i})">
+              ${p.soldOut?'🔴 Sold Out':'🟢 Available'}
+            </button>
+          </div>
+          <div class="admin-media-actions">
+            <button class="btn sm" onclick="savePhotoMeta(${i})">💾 Save</button>
+            <button class="btn sm danger" onclick="deletePhoto(${i})">🗑️ Delete</button>
+            <span style="font-size:0.79rem;color:var(--muted);">❤️ ${p.likes||0} &nbsp;💬 ${(p.comments||[]).length} &nbsp;👁️ ${p.views||0}</span>
+          </div>
+        </div>
+      </div>`).join('');
+  }
+
+  // Comments inbox (all comments from all products, decrypted)
+  const comments=[];
+  state.photos.forEach((p,pi)=>(p.comments||[]).forEach((enc,ci)=>{
+    const c=decryptComment(enc);if(c)comments.push({c,type:'photo',ii:pi,ci,itemName:p.title||p.name||'Photo'});
+  }));
+  state.videos.forEach((v,vi)=>(v.comments||[]).forEach((enc,ci)=>{
+    const c=decryptComment(enc);if(c)comments.push({c,type:'video',ii:vi,ci,itemName:v.title||v.name||'Video'});
+  }));
+  const inbox=document.getElementById('admin-comments');
+  inbox.innerHTML=!comments.length?'<div class="empty-state">No comments yet.</div>':
+    comments.map(({c,type,ii,ci,itemName})=>`
+      <div class="comment-admin-item">
+        <div class="ca-avatar">${c.author.charAt(0).toUpperCase()}</div>
+        <div class="ca-body">
+          <div class="ca-product">📦 ${esc(itemName)}</div>
+          <div class="ca-author">${esc(c.author)}</div>
+          <div class="ca-text">${esc(c.text)}</div>
+          <div class="ca-time">${c.date}</div>
+        </div>
+        <button class="ca-del" onclick="adminDeleteComment('${type}',${ii},${ci})">🗑️</button>
+      </div>`).join('');
+}
+
+// =====================================================================
+//  LIGHTBOX (admin quick preview)
+// =====================================================================
+function openLightbox(src){
+  const d=document.createElement('div');
+  d.style.cssText='position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;display:flex;align-items:center;justify-content:center;cursor:pointer;';
+  d.onclick=()=>{d.remove();document.body.style.overflow='';};
+  d.innerHTML=`<img src="${src}" style="max-width:92vw;max-height:88vh;border-radius:16px;box-shadow:0 0 80px rgba(139,92,246,0.4);"/>`;
+  document.body.appendChild(d);document.body.style.overflow='hidden';
+}
+
+// =====================================================================
+//  UTILS
+// =====================================================================
+function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),3000);}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function defaultAvatar(){return'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23e9d5ff"/><text y=".9em" font-size="60" x="50%" dominant-baseline="middle" text-anchor="middle">💜</text></svg>';}
+</script>
+</body>
+</html>

@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shop With DEE 💜</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --purple:#8b5cf6;--purple-dark:#6d28d9;--purple-light:#c4b5fd;
+    --pink:#ec4899;--pink-light:#f9a8d4;--sky:#38bdf8;--sky-light:#bae6fd;
+    --bg:#fdf4ff;--card:#fff;--text:#1e1033;--muted:#7c6b99;
+    --border:#e9d5ff;--radius:18px;--shadow:0 8px 40px rgba(139,92,246,0.13);
+    --green:#22c55e;--red:#ef4444;
+  }
+  *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+
+  nav{background:linear-gradient(135deg,var(--purple-dark) 0%,var(--pink) 60%,var(--sky) 100%);padding:0 24px;display:flex;align-items:center;justify-content:space-between;height:64px;box-shadow:0 4px 24px rgba(139,92,246,0.25);position:sticky;top:0;z-index:999;}
+  .nav-brand{font-family:'Playfair Display',serif;font-size:1.5rem;font-weight:900;color:#fff;letter-spacing:-1px;user-select:none;}
+  .nav-brand span{color:var(--sky-light);}
+
+  .page{padding:28px 16px;max-width:700px;margin:0 auto;}
+
+  .hero-banner{background:linear-gradient(135deg,var(--purple-dark) 0%,var(--pink) 55%,var(--sky) 100%);border-radius:20px;padding:32px 28px;display:flex;align-items:center;gap:24px;margin-bottom:28px;box-shadow:var(--shadow);flex-wrap:wrap;}
+  .hero-pic{width:90px;height:90px;border-radius:50%;object-fit:cover;border:4px solid rgba(255,255,255,0.6);box-shadow:0 0 0 5px rgba(255,255,255,0.2);flex-shrink:0;background:rgba(255,255,255,0.2);}
+  .hero-info h1{font-family:'Playfair Display',serif;font-size:1.9rem;color:#fff;font-weight:900;}
+  .hero-info p{color:rgba(255,255,255,0.85);margin-top:6px;font-size:0.95rem;line-height:1.6;}
+  .hero-stats{display:flex;gap:20px;margin-top:12px;flex-wrap:wrap;}
+  .hero-stat{background:rgba(255,255,255,0.2);border-radius:50px;padding:5px 16px;color:#fff;font-size:0.82rem;font-weight:600;}
+
+  .section-heading{font-family:'Playfair Display',serif;font-size:1.3rem;font-weight:700;color:var(--purple-dark);margin-bottom:16px;margin-top:8px;display:flex;align-items:center;gap:8px;}
+  .section-heading::after{content:'';flex:1;height:2px;background:linear-gradient(to right,var(--pink-light),transparent);margin-left:12px;}
+
+  .sf-announce{background:linear-gradient(135deg,#fdf4ff,#fdf2f8);border:1.5px solid var(--pink-light);border-radius:14px;padding:14px 18px;margin-bottom:12px;}
+  .sf-announce-badge{display:inline-block;background:var(--pink);color:#fff;font-size:0.68rem;font-weight:700;border-radius:50px;padding:2px 10px;margin-bottom:6px;letter-spacing:0.05em;}
+  .sf-announce p{font-size:0.92rem;color:var(--text);line-height:1.65;}
+  .sf-announce .sf-meta{font-size:0.73rem;color:var(--muted);margin-top:5px;}
+
+  .feed{display:flex;flex-direction:column;gap:24px;margin-bottom:32px;}
+  .feed-card{background:var(--card);border-radius:20px;box-shadow:var(--shadow);border:1.5px solid var(--border);overflow:hidden;transition:box-shadow 0.25s;}
+  .feed-card:hover{box-shadow:0 12px 48px rgba(139,92,246,0.18);}
+
+  .feed-card-header{display:flex;align-items:center;gap:12px;padding:14px 18px 10px;flex-wrap:wrap;}
+  .feed-card-avatar{width:38px;height:38px;border-radius:50%;object-fit:cover;border:2px solid var(--pink-light);background:linear-gradient(135deg,var(--purple-light),var(--pink-light));flex-shrink:0;}
+  .feed-card-author{font-weight:700;font-size:0.9rem;color:var(--purple-dark);}
+  .feed-card-time{font-size:0.73rem;color:var(--muted);}
+
+  .feed-card-media{width:100%;position:relative;background:#1e1033;cursor:pointer;max-height:520px;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+  .feed-card-media img{width:100%;max-height:520px;object-fit:contain;display:block;}
+  .feed-card-media video{width:100%;max-height:520px;display:block;object-fit:contain;}
+  .media-tap-overlay{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.12);opacity:0;transition:opacity 0.2s;}
+  .feed-card-media:hover .media-tap-overlay{opacity:1;}
+  .expand-icon{width:44px;height:44px;background:rgba(255,255,255,0.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:1.3rem;box-shadow:0 2px 12px rgba(0,0,0,0.2);}
+
+  .card-badges{position:absolute;top:10px;left:10px;display:flex;gap:6px;}
+  .badge{border-radius:50px;font-size:0.7rem;font-weight:700;padding:4px 11px;letter-spacing:0.03em;}
+  .badge.sold{background:rgba(239,68,68,0.9);color:#fff;}
+  .badge.available{background:rgba(34,197,94,0.9);color:#fff;}
+  .badge.video{background:rgba(139,92,246,0.9);color:#fff;}
+
+  .feed-card-body{padding:14px 18px;}
+  .item-price{display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;border-radius:50px;padding:5px 16px;font-size:1rem;font-weight:700;margin-bottom:10px;}
+  .item-name{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:700;color:var(--purple-dark);margin-bottom:6px;}
+  .item-desc{font-size:0.9rem;color:var(--muted);line-height:1.6;}
+  .read-more{color:var(--purple);font-weight:600;cursor:pointer;font-size:0.88rem;background:none;border:none;padding:0;font-family:inherit;}
+
+  .feed-card-actions{display:flex;align-items:center;gap:4px;padding:10px 14px;border-top:1.5px solid var(--border);}
+  .action-btn{display:flex;align-items:center;gap:5px;background:none;border:none;cursor:pointer;font-family:inherit;border-radius:50px;padding:7px 13px;font-size:0.85rem;font-weight:600;transition:background 0.18s,color 0.18s;color:var(--muted);}
+  .action-btn:hover{background:#fdf4ff;color:var(--purple);}
+  .action-btn.liked{color:var(--pink);}
+  .action-btn.liked .heart-icon{animation:heartPop 0.35s ease;}
+  @keyframes heartPop{0%{transform:scale(1);}40%{transform:scale(1.5);}70%{transform:scale(0.9);}100%{transform:scale(1);}}
+  .views-count{margin-left:auto;font-size:0.77rem;color:var(--muted);display:flex;align-items:center;gap:4px;}
+
+  .whatsapp-cta{display:inline-flex;align-items:center;gap:8px;background:#25d366;color:#fff;border:none;border-radius:50px;padding:7px 16px;cursor:pointer;font-size:0.82rem;font-weight:700;margin-left:auto;transition:opacity 0.2s;text-decoration:none;font-family:inherit;}
+  .whatsapp-cta:hover{opacity:0.88;}
+
+  .comments-section{padding:0 18px 16px;display:none;}
+  .comments-section.open{display:block;}
+  .comments-list{max-height:220px;overflow-y:auto;padding-right:4px;}
+  .comment-item{display:flex;gap:10px;padding:9px 0;border-bottom:1px solid var(--border);position:relative;align-items:flex-start;}
+  .comment-item:last-child{border-bottom:none;}
+  .comment-avatar{width:30px;height:30px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--purple-light),var(--pink-light));display:flex;align-items:center;justify-content:center;font-size:0.85rem;}
+  .comment-avatar.mine{background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;}
+  .comment-body{flex:1;min-width:0;}
+  .comment-author{font-size:0.82rem;font-weight:700;color:var(--purple-dark);}
+  .comment-text{font-size:0.88rem;color:var(--text);line-height:1.5;word-break:break-word;}
+  .comment-time{font-size:0.72rem;color:var(--muted);margin-top:2px;}
+  .comment-input-row{display:flex;gap:10px;margin-top:12px;align-items:flex-end;}
+  .comment-input-row input{flex:1;border-radius:50px;padding:9px 16px;font-size:0.88rem;margin-top:0;border:1.5px solid var(--border);background:#fdf4ff;color:var(--text);font-family:inherit;outline:none;}
+  .comment-input-row input:focus{border-color:var(--purple);background:#fff;}
+  .comment-send-btn{background:linear-gradient(135deg,var(--purple),var(--pink));border:none;color:#fff;border-radius:50%;width:38px;height:38px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-shrink:0;font-size:1rem;transition:opacity 0.2s;}
+  .comment-send-btn:hover{opacity:0.85;}
+  .no-comments{color:var(--muted);font-size:0.85rem;text-align:center;padding:10px 0;}
+  .own-tag{background:var(--purple);color:#fff;border-radius:50px;font-size:0.65rem;padding:1px 7px;font-weight:700;vertical-align:middle;}
+  .comment-delete-btn{background:#fee2e2;border:none;border-radius:8px;color:#ef4444;font-size:0.72rem;padding:3px 9px;cursor:pointer;font-family:inherit;flex-shrink:0;align-self:flex-start;margin-top:4px;}
+
+  .lightbox{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.92);z-index:9999;align-items:center;justify-content:center;}
+  .lightbox.open{display:flex;}
+  .lightbox-content{max-width:92vw;max-height:92vh;border-radius:16px;overflow:hidden;box-shadow:0 0 80px rgba(139,92,246,0.4);}
+  .lightbox-content img,.lightbox-content video{max-width:92vw;max-height:88vh;display:block;}
+  .lightbox-close{position:absolute;top:18px;right:24px;color:#fff;font-size:1.8rem;cursor:pointer;background:rgba(255,255,255,0.1);border:none;border-radius:50%;width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-family:inherit;}
+
+  .fab-wa{position:fixed;bottom:28px;right:24px;z-index:998;width:58px;height:58px;border-radius:50%;background:#25d366;color:#fff;border:none;cursor:pointer;font-size:1.7rem;box-shadow:0 6px 24px rgba(37,211,102,0.45);display:flex;align-items:center;justify-content:center;transition:transform 0.2s,box-shadow 0.2s;text-decoration:none;}
+  .fab-wa:hover{transform:scale(1.1);box-shadow:0 8px 32px rgba(37,211,102,0.6);}
+  .fab-wa-tooltip{position:fixed;bottom:96px;right:24px;z-index:997;background:#1e1033;color:#fff;border-radius:10px;padding:7px 14px;font-size:0.8rem;font-weight:600;white-space:nowrap;opacity:0;pointer-events:none;transition:opacity 0.2s;box-shadow:0 4px 16px rgba(0,0,0,0.2);}
+  .fab-wa:hover+.fab-wa-tooltip{opacity:1;}
+
+  .toast{position:fixed;bottom:100px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--purple),var(--pink));color:#fff;padding:11px 24px;border-radius:50px;font-size:0.88rem;font-weight:600;z-index:10000;box-shadow:0 4px 20px rgba(139,92,246,0.4);animation:toastIn 0.3s ease;white-space:nowrap;}
+  @keyframes toastIn{from{opacity:0;transform:translateX(-50%) translateY(14px);}to{opacity:1;transform:translateX(-50%) translateY(0);}}
+
+  .empty-state{text-align:center;color:var(--muted);font-size:0.9rem;padding:20px 0;}
+  .img-broken{width:100%;min-height:200px;background:linear-gradient(135deg,#f3e8ff,#fce7f3);display:flex;align-items:center;justify-content:center;flex-direction:column;gap:8px;color:var(--muted);font-size:0.85rem;}
+
+  video.lazy-video:not([src]){background:linear-gradient(135deg,#1e1033 0%,#2d1b4e 100%);min-height:220px;}
+
+  ::-webkit-scrollbar{width:5px;height:5px;}
+  ::-webkit-scrollbar-track{background:transparent;}
+  ::-webkit-scrollbar-thumb{background:var(--purple-light);border-radius:6px;}
+
+  @media(max-width:480px){
+    nav{padding:0 14px;height:58px;}
+    .nav-brand{font-size:1.2rem;}
+    .page{padding:18px 10px;}
+    .hero-banner{padding:22px 18px;gap:16px;}
+    .hero-info h1{font-size:1.5rem;}
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-brand">Shop <span>With DEE</span> 💜</div>
+</nav>
+
+<div class="page" id="storefront">
+  <div class="hero-banner">
+    <img class="hero-pic" id="sf-pic" src="" alt="D's profile" onerror="this.src=defaultAvatar()"/>
+    <div class="hero-info">
+      <h1 id="sf-name">Shop With DEE</h1>
+      <p id="sf-desc">Welcome! Browse my latest arrivals, announcements &amp; exclusive content.</p>
+      <div class="hero-stats">
+        <span class="hero-stat" id="sf-total-items">0 Items</span>
+        <span class="hero-stat" id="sf-total-likes">0 Likes</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-heading">📢 Announcements</div>
+  <div id="sf-announces"></div>
+
+  <div class="section-heading">📸 Photos</div>
+  <div class="feed" id="sf-photos"></div>
+</div>
+
+<div class="lightbox" id="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" onclick="closeLightbox()">✕</button>
+  <div class="lightbox-content" id="lightbox-content"></div>
+</div>
+
+<a class="fab-wa" id="fab-wa" href="#" target="_blank" title="Chat on WhatsApp">
+  <svg viewBox="0 0 32 32" width="28" height="28" fill="currentColor"><path d="M16 0C7.163 0 0 7.163 0 16c0 2.822.734 5.476 2.018 7.782L0 32l8.418-2.007C10.618 31.289 13.244 32 16 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333c-2.578 0-5.01-.694-7.107-1.907l-.508-.301-5.003 1.192 1.252-4.863-.33-.529A13.267 13.267 0 012.667 16c0-7.352 5.981-13.333 13.333-13.333 7.352 0 13.333 5.981 13.333 13.333C29.333 23.352 23.352 29.333 16 29.333zm7.297-9.948c-.4-.2-2.364-1.166-2.73-1.299-.365-.133-.631-.2-.898.2-.267.4-1.032 1.299-1.265 1.565-.233.267-.466.3-.865.1-.4-.2-1.688-.622-3.215-1.984-1.188-1.06-1.99-2.37-2.224-2.77-.233-.4-.025-.616.175-.815.18-.178.4-.466.6-.7.2-.232.266-.4.4-.665.133-.267.066-.5-.033-.7-.1-.2-.898-2.166-1.232-2.965-.324-.779-.654-.673-.898-.686l-.765-.013c-.266 0-.698.1-.1065.5-.365.4-1.398 1.365-1.398 3.33 0 1.966 1.432 3.865 1.632 4.132.2.267 2.82 4.305 6.832 6.036.954.412 1.699.658 2.281.842.958.305 1.831.262 2.52.159.769-.114 2.364-.967 2.698-1.9.333-.933.333-1.732.233-1.9-.1-.166-.366-.266-.765-.466z"/></svg>
+</a>
+<div class="fab-wa-tooltip">💬 Chat with DEE!</div>
+
+<script>
+  const COMMENT_KEY='ShopWithDEE_SecretKey_2025!';
+  function xorEncrypt(t,k){let r='';for(let i=0;i<t.length;i++)r+=String.fromCharCode(t.charCodeAt(i)^k.charCodeAt(i%k.length));try{return btoa(unescape(encodeURIComponent(r)));}catch(e){return btoa(r);}}
+  function xorDecrypt(e,k){try{const t=decodeURIComponent(escape(atob(e)));let r='';for(let i=0;i<t.length;i++)r+=String.fromCharCode(t.charCodeAt(i)^k.charCodeAt(i%k.length));return r;}catch(e){return'[unreadable]';}}
+  function encryptComment(o){return{e:xorEncrypt(JSON.stringify(o),COMMENT_KEY),token:o.token};}
+  function decryptComment(e){try{return JSON.parse(xorDecrypt(e.e,COMMENT_KEY));}catch(e){return null;}}
+  function genToken(){return Math.random().toString(36).slice(2)+Date.now().toString(36);}
+  const TK='swd_my_tokens';
+  function getMyTokens(){try{return JSON.parse(localStorage.getItem(TK)||'[]');}catch(e){return[];}}
+  function saveMyToken(t){const ts=getMyTokens();ts.push(t);localStorage.setItem(TK,JSON.stringify(ts));}
+  function ownsComment(t){return getMyTokens().includes(t);}
+
+  let state={name:'Shop With DEE',desc:'Welcome! Browse my latest arrivals, announcements & exclusive content.',pic:'',wa:'',announcements:[],photos:[],videos:[]};
+
+  function loadState(){
+    try{
+      const s=localStorage.getItem('swd_state_v2');
+      if(s){const p=JSON.parse(s);state={...state,...p};
+        state.photos=(state.photos||[]).map(ph=>({likes:0,comments:[],views:0,addedDate:'',soldOut:false,desc:'',price:'',...ph}));
+        state.videos=(state.videos||[]).map(v=>({likes:0,comments:[],views:0,addedDate:'',soldOut:false,desc:'',price:'',...v}));}
+    }catch(e){}
+  }
+  function saveState(){try{localStorage.setItem('swd_state_v2',JSON.stringify(state));}catch(e){}}
+
+  function toggleLike(type,i){
+    const arr=type==='photo'?state.photos:state.videos;
+    const key=`liked_${type}_${i}`;
+    if(localStorage.getItem(key)){arr[i].likes=Math.max(0,(arr[i].likes||0)-1);localStorage.removeItem(key);}
+    else{arr[i].likes=(arr[i].likes||0)+1;localStorage.setItem(key,'1');}
+    saveState();renderStorefront();
+  }
+  function isLiked(type,i){return!!localStorage.getItem(`liked_${type}_${i}`);}
+  function toggleComments(id){document.getElementById(`comments-${id}`).classList.toggle('open');}
+
+  function submitComment(type,i){
+    const arr=type==='photo'?state.photos:state.videos;
+    const ne=document.getElementById(`cname-${type}-${i}`);
+    const te=document.getElementById(`ctext-${type}-${i}`);
+    const author=ne.value.trim()||'Anonymous';
+    const text=te.value.trim();
+    if(!text){toast('Please write something first! ✍️');return;}
+    const token=genToken();
+    arr[i].comments.push(encryptComment({author,text,token,date:new Date().toLocaleDateString('en-ZA',{day:'2-digit',month:'short'})+' '+new Date().toLocaleTimeString('en-ZA',{hour:'2-digit',minute:'2-digit'})}));
+    saveMyToken(token);te.value='';saveState();renderStorefront();
+    const el=document.getElementById(`comments-${type}-${i}`);if(el)el.classList.add('open');
+    toast('Comment sent! 💬 Only you and the shop owner can read it.');
+  }
+
+  function deleteComment(type,i,ci){
+    const arr=type==='photo'?state.photos:state.videos;
+    const enc=arr[i].comments[ci];
+    if(!enc||!ownsComment(enc.token)){toast('You can only delete your own comments.');return;}
+    if(!confirm('Delete your comment?'))return;
+    arr[i].comments.splice(ci,1);saveState();renderStorefront();
+    const el=document.getElementById(`comments-${type}-${i}`);if(el)el.classList.add('open');
+    toast('Your comment was deleted 🗑️');
+  }
+
+  function shareItem(name){
+    if(navigator.share)navigator.share({title:'Shop With DEE 💜',text:`Check out "${name}" on Shop With DEE!`,url:window.location.href}).catch(()=>{});
+    else navigator.clipboard.writeText(window.location.href).then(()=>toast('Link copied! 🔗')).catch(()=>toast('Share this page with your friends! 🔗'));
+  }
+
+  function incrementView(type,i){const arr=type==='photo'?state.photos:state.videos;arr[i].views=(arr[i].views||0)+1;saveState();}
+
+  function renderStorefront(){
+    document.getElementById('sf-pic').src=state.pic||defaultAvatar();
+    document.getElementById('sf-name').textContent=state.name;
+    document.getElementById('sf-desc').textContent=state.desc;
+    updateFabWa();
+    const totalLikes=[...state.photos].reduce((s,i)=>s+(i.likes||0),0);
+    document.getElementById('sf-total-items').textContent=`${state.photos.length} Items`;
+    document.getElementById('sf-total-likes').textContent=`${totalLikes} Likes`;
+    const sa=document.getElementById('sf-announces');
+    sa.innerHTML=!state.announcements.length?'<div class="empty-state" style="padding:16px 0;">No announcements yet — check back soon! 💜</div>':state.announcements.map(a=>`<div class="sf-announce"><span class="sf-announce-badge">📢 ANNOUNCEMENT</span><p>${esc(a.text)}</p><div class="sf-meta">📅 ${a.date}</div></div>`).join('');
+    const sp=document.getElementById('sf-photos');
+    sp.innerHTML=!state.photos.length?'<div class="empty-state">No photos yet 📸</div>':state.photos.map((p,i)=>feedCard('photo',i,p)).join('');
+    setTimeout(initLazyVideos,80);
+  }
+
+  function feedCard(type,i,item){
+    const liked=isLiked(type,i);
+    const isVideo=type==='video';
+    const title=item.title||item.name||(isVideo?'Video':'Photo');
+    const DL=120;const desc=item.desc||'';
+    const descHtml=desc.length>DL?`<span class="desc-short-${type}-${i}">${esc(desc.slice(0,DL))}… <button class="read-more" onclick="expandDesc('${type}',${i})">more</button></span><span class="desc-full-${type}-${i}" style="display:none;">${esc(desc)} <button class="read-more" onclick="collapseDesc('${type}',${i})">less</button></span>`:esc(desc);
+    const src=item.src||'';
+    const media=isVideo
+      ?`<video data-src="${src}" muted playsinline loop preload="none" class="lazy-video" onclick="openLightbox('vid','${src}');incrementView('video',${i});" style="cursor:pointer;"></video>`
+      :`<img src="${src}" alt="${esc(title)}" loading="lazy" onerror="this.parentElement.innerHTML='<div class=\\'img-broken\\'>🖼️<br/>Image loading…</div>'" onclick="openLightbox('img','${src}');incrementView('photo',${i});"/>`;
+    const priceBadge=item.price?`<div class="item-price">💰 ${esc(item.price)}</div>`:'';
+    const soldBadge=item.soldOut?`<span class="badge sold">SOLD OUT</span>`:`<span class="badge available">✅ AVAILABLE</span>`;
+    const typeBadge=isVideo?`<span class="badge video">▶ VIDEO</span>`:'';
+    const rawC=item.comments||[];const cc=rawC.length;
+    const myC=rawC.filter(e=>ownsComment(e.token));
+    const commentsHtml=myC.length===0
+      ?`<div class="no-comments">${cc>0?'💬 Comments are private — only visible to you and the shop owner.':'No comments yet — be the first! 💬'}</div>`
+      :myC.map(enc=>{const gi=rawC.indexOf(enc);const c=decryptComment(enc);if(!c)return'';return`<div class="comment-item own-comment"><div class="comment-avatar mine">${c.author.charAt(0).toUpperCase()}</div><div class="comment-body"><div class="comment-author">${esc(c.author)} <span class="own-tag">You</span></div><div class="comment-text">${esc(c.text)}</div><div class="comment-time">${c.date}</div></div><button class="comment-delete-btn" onclick="deleteComment('${type}',${i},${gi})">🗑️</button></div>`;}).join('');
+    const waBtn=state.wa?`<a class="whatsapp-cta" href="https://wa.me/${state.wa.replace(/\s+|\+/g,'')}?text=Hi%20D!%20I%27m%20interested%20in%20%22${encodeURIComponent(title)}%22%20%F0%9F%92%9C" target="_blank">🛒 Order on WhatsApp</a>`:'';
+    return`<div class="feed-card" id="card-${type}-${i}">
+      <div class="feed-card-header">
+        <img class="feed-card-avatar" src="${state.pic||defaultAvatar()}" alt="D" onerror="this.src=defaultAvatar()"/>
+        <div><div class="feed-card-author">${esc(state.name)}</div><div class="feed-card-time">📅 ${item.addedDate||'Recently'}</div></div>
+        ${waBtn}
+      </div>
+      <div class="feed-card-media" style="position:relative;">${media}<div class="card-badges">${soldBadge}${typeBadge}</div><div class="media-tap-overlay"><div class="expand-icon">${isVideo?'▶':'🔍'}</div></div></div>
+      <div class="feed-card-body">${priceBadge}<div class="item-name">${esc(title)}</div>${desc?`<div class="item-desc">${descHtml}</div>`:''}</div>
+      <div class="feed-card-actions">
+        <button class="action-btn ${liked?'liked':''}" onclick="toggleLike('${type}',${i})"><span class="heart-icon">${liked?'❤️':'🤍'}</span> ${item.likes||0}</button>
+        <button class="action-btn" onclick="toggleComments('${type}-${i}')">💬 ${cc}</button>
+        <button class="action-btn" onclick="shareItem('${esc(title)}')">🔗 Share</button>
+        <div class="views-count">👁️ ${item.views||0}</div>
+      </div>
+      <div class="comments-section" id="comments-${type}-${i}">
+        <div class="comments-list">${commentsHtml}</div>
+        <div class="comment-input-row">
+          <input type="text" id="cname-${type}-${i}" placeholder="Your name (optional)" style="max-width:140px;"/>
+          <input type="text" id="ctext-${type}-${i}" placeholder="Write a comment…" onkeydown="if(event.key==='Enter')submitComment('${type}',${i})"/>
+          <button class="comment-send-btn" onclick="submitComment('${type}',${i})">➤</button>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  function expandDesc(type,i){document.querySelector(`.desc-short-${type}-${i}`).style.display='none';document.querySelector(`.desc-full-${type}-${i}`).style.display='inline';}
+  function collapseDesc(type,i){document.querySelector(`.desc-short-${type}-${i}`).style.display='inline';document.querySelector(`.desc-full-${type}-${i}`).style.display='none';}
+
+  function openLightbox(type,src){
+    const lbc=document.getElementById('lightbox-content');
+    lbc.innerHTML=type==='img'?`<img src="${src}" alt="Full size"/>`:`<video src="${src}" controls autoplay style="border-radius:12px;max-width:92vw;max-height:88vh;"></video>`;
+    document.getElementById('lightbox').classList.add('open');document.body.style.overflow='hidden';
+  }
+  function closeLightbox(e){
+    if(!e||e.target===document.getElementById('lightbox')||e.target.classList.contains('lightbox-close')){
+      const lbc=document.getElementById('lightbox-content');const vid=lbc.querySelector('video');if(vid)vid.pause();
+      lbc.innerHTML='';document.getElementById('lightbox').classList.remove('open');document.body.style.overflow='';
+    }
+  }
+
+  function updateFabWa(){
+    const fab=document.getElementById('fab-wa');
+    if(state.wa){const n=state.wa.replace(/\s+/g,'');fab.href=`https://wa.me/${n.replace('+','')}?text=Hi%20D!%20I%20saw%20your%20shop%20and%20I%27m%20interested%20%F0%9F%92%9C`;fab.style.display='flex';}
+    else fab.href='#';
+  }
+  function toast(msg){const t=document.createElement('div');t.className='toast';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2800);}
+  function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+  function defaultAvatar(){return'data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="%23e9d5ff"/><text y=".9em" font-size="60" x="50%" dominant-baseline="middle" text-anchor="middle">💜</text></svg>';}
+
+  let _vo=null,_po=null;
+  function initLazyVideos(){
+    const vids=document.querySelectorAll('video.lazy-video[data-src]');if(!vids.length)return;
+    if(_vo){vids.forEach(v=>_vo.observe(v));return;}
+    if('IntersectionObserver' in window){
+      _vo=new IntersectionObserver(entries=>entries.forEach(e=>{const v=e.target;if(e.isIntersecting&&v.dataset.src&&!v.getAttribute('src')){v.src=v.dataset.src;v.load();v.addEventListener('canplay',()=>v.play().catch(()=>{}),{once:true});_vo.unobserve(v);}}),{rootMargin:'300px 0px',threshold:0.05});
+      _po=new IntersectionObserver(entries=>entries.forEach(e=>{const v=e.target;if(!v.getAttribute('src'))return;if(e.isIntersecting)v.play().catch(()=>{});else v.pause();}),{threshold:0.35});
+      vids.forEach(v=>{_vo.observe(v);_po.observe(v);});
+    }else{vids.forEach(v=>{if(v.dataset.src&&!v.getAttribute('src')){v.src=v.dataset.src;v.load();v.play().catch(()=>{});}});}
+  }
+
+  // Auto-refresh every 60s so new products appear without reload
+  setInterval(()=>{loadState();renderStorefront();},60000);
+
+  loadState();
+  renderStorefront();
+  setTimeout(initLazyVideos,200);
+</script>
+</body>
+</html>
